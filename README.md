@@ -47,12 +47,14 @@ target 'YourAwesomeProject' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
 
+  pod 'RNPermissions', :path => '../node_modules/react-native-permissions', :modular_headers => true
   pod 'Permission-AppTrackingTransparency', :path => "#{permissions_path}/AppTrackingTransparency"
   pod 'Permission-BluetoothPeripheral', :path => "#{permissions_path}/BluetoothPeripheral"
   pod 'Permission-Calendars', :path => "#{permissions_path}/Calendars"
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
+  pod 'Permission-LocalNetworkPrivacy', :path => "#{permissions_path}/LocalNetworkPrivacy"
   pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
   pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
@@ -497,6 +499,7 @@ PERMISSIONS.IOS.CALENDARS;
 PERMISSIONS.IOS.CAMERA;
 PERMISSIONS.IOS.CONTACTS;
 PERMISSIONS.IOS.FACE_ID;
+PERMISSIONS.IOS.LOCAL_NETWORK_PRIVACY;
 PERMISSIONS.IOS.LOCATION_ALWAYS;
 PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 PERMISSIONS.IOS.MEDIA_LIBRARY;
