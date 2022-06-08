@@ -77,12 +77,20 @@ public class RNPermissionsModule extends ReactContextBaseJavaModule implements P
       return "ACCESS_COARSE_LOCATION";
     if (permission.equals("android.permission.ACCESS_FINE_LOCATION"))
       return "ACCESS_FINE_LOCATION";
+    if (permission.equals("android.permission.ACCESS_MEDIA_LOCATION"))
+      return "ACCESS_MEDIA_LOCATION";
     if (permission.equals("com.android.voicemail.permission.ADD_VOICEMAIL"))
       return "ADD_VOICEMAIL";
     if (permission.equals("android.permission.ACTIVITY_RECOGNITION"))
       return "ACTIVITY_RECOGNITION";
     if (permission.equals("android.permission.ANSWER_PHONE_CALLS"))
       return "ANSWER_PHONE_CALLS";
+    if (permission.equals("android.permission.BLUETOOTH_ADVERTISE"))
+      return "BLUETOOTH_ADVERTISE";
+    if (permission.equals("android.permission.BLUETOOTH_CONNECT"))
+      return "BLUETOOTH_CONNECT";
+    if (permission.equals("android.permission.BLUETOOTH_SCAN"))
+      return "BLUETOOTH_SCAN";
     if (permission.equals("android.permission.BODY_SENSORS"))
       return "BODY_SENSORS";
     if (permission.equals("android.permission.CALL_PHONE"))
@@ -352,11 +360,11 @@ public class RNPermissionsModule extends ReactContextBaseJavaModule implements P
 
     try {
       PermissionAwareActivity activity = getPermissionAwareActivity();
-      boolean[] rationaleStatuses = new boolean[permissions.size()];
+      boolean[] rationaleStatuses = new boolean[permissionsToCheck.size()];
 
-      for (int i = 0; i < permissions.size(); i++) {
+      for (int i = 0; i < permissionsToCheck.size(); i++) {
         rationaleStatuses[i] = activity
-          .shouldShowRequestPermissionRationale(permissions.getString(i));
+          .shouldShowRequestPermissionRationale(permissionsToCheck.get(i));
       }
 
       mRequests.put(mRequestCode, new Request(

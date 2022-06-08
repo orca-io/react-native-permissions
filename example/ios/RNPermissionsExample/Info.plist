@@ -26,8 +26,6 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>localhost</key>
@@ -37,6 +35,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_lnp._tcp.</string>
+	</array>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Let me use your media library</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
@@ -51,17 +53,19 @@
 	<string>Let me use your contacts</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Let me use FaceID</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Let me use your local network</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Let me use your location, even in background</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Let me use your location, even in background</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Let me use your location when the app is opened</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<dict>
 		<key>full-accuracy</key>
 		<string>Let me use your precise location temporarily</string>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Let me use your location when the app is opened</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Let me use the microphone</string>
 	<key>NSMotionUsageDescription</key>

@@ -1,20 +1,32 @@
-# ☝🏼 React Native Permissions
+# ☝🏼 react-native-permissions
 
-[![npm version](https://badge.fury.io/js/react-native-permissions.svg)](https://badge.fury.io/js/react-native-permissions)
+A unified permissions API for React Native on iOS, Android and Windows.<br>
+(For Windows only builds 18362 and later are supported)
+
+[![npm version](https://badge.fury.io/js/react-native-permissions.svg)](https://www.npmjs.org/package/react-native-permissions)
 [![npm](https://img.shields.io/npm/dt/react-native-permissions.svg)](https://www.npmjs.org/package/react-native-permissions)
-![Platform - Android, iOS and Windows](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20Windows-yellow.svg)
-![MIT](https://img.shields.io/dub/l/vibe-d.svg)
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![MIT](https://img.shields.io/dub/l/vibe-d.svg)](https://opensource.org/licenses/MIT)
+<br>
+[![Platform - Android](https://img.shields.io/badge/platform-Android-3ddc84.svg?style=flat&logo=android)](https://www.android.com)
+[![Platform - iOS](https://img.shields.io/badge/platform-iOS-000.svg?style=flat&logo=apple)](https://developer.apple.com/ios)
+[![Platform - Windows](https://img.shields.io/badge/platform-Windows-0067b8.svg?style=flat&logo=windows)](https://www.microsoft.com/en-us/windows)
 
-A unified permissions API for React Native on iOS, Android and Windows.
 
-For Windows only builds 18362 and later are supported.
+## Funding
+
+<a href="https://github.com/sponsors/zoontek">
+  <img align="right" width="150" alt="This library helped you? Consider sponsoring!" src=".github/funding-octocat.svg">
+</a>
+
+This module is provided **as is**, I work on it in my free time.
+
+If your company uses it in a production app, consider sponsoring this project 💰. You also can contact me for **premium** enterprise support, help with issues, prioritize bugfixes, feature requests, etc.
 
 ## Support
 
-| version | react-native version |
-| ------- | -------------------- |
-| 3.0.0+  | 0.63.0+              |
+| version | react-native version | Xcode version |
+| ------- | -------------------- | ------------- |
+| 3.0.0+  | 0.63.0+              | 12+           |
 
 ## Setup
 
@@ -41,6 +53,7 @@ target 'YourAwesomeProject' do
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
   pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
+  pod 'Permission-LocalNetworkPrivacy', :path => "#{permissions_path}/LocalNetworkPrivacy"
   pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
   pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
@@ -84,6 +97,8 @@ Then update your `Info.plist` with wanted permissions usage descriptions:
   <string>YOUR TEXT</string>
   <key>NSFaceIDUsageDescription</key>
   <string>YOUR TEXT</string>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>YOUR TEXT</string>
   <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
   <string>YOUR TEXT</string>
   <key>NSLocationAlwaysUsageDescription</key>
@@ -111,6 +126,13 @@ Then update your `Info.plist` with wanted permissions usage descriptions:
   <string>YOUR TEXT</string>
   <key>NSUserTrackingUsageDescription</key>
   <string>YOUR TEXT</string>
+
+  <!-- 🚨 This is required when requesting PERMISSIONS.IOS.LOCAL_NETWORK_PRIVACY 🚨 -->
+
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_lnp._tcp.</string>
+  </array>
 
   <!-- … -->
 
@@ -155,8 +177,12 @@ Add all wanted permissions to your app `android/app/src/main/AndroidManifest.xml
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
   <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+  <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+  <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
   <uses-permission android:name="android.permission.BODY_SENSORS" />
   <uses-permission android:name="android.permission.CALL_PHONE" />
   <uses-permission android:name="android.permission.CAMERA" />
@@ -436,9 +462,13 @@ PERMISSIONS.ANDROID.ACCEPT_HANDOVER;
 PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION;
 PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION;
 PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+PERMISSIONS.ANDROID.ACCESS_MEDIA_LOCATION;
 PERMISSIONS.ANDROID.ACTIVITY_RECOGNITION;
 PERMISSIONS.ANDROID.ADD_VOICEMAIL;
 PERMISSIONS.ANDROID.ANSWER_PHONE_CALLS;
+PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE;
+PERMISSIONS.ANDROID.BLUETOOTH_CONNECT;
+PERMISSIONS.ANDROID.BLUETOOTH_SCAN;
 PERMISSIONS.ANDROID.BODY_SENSORS;
 PERMISSIONS.ANDROID.CALL_PHONE;
 PERMISSIONS.ANDROID.CAMERA;
@@ -477,6 +507,7 @@ PERMISSIONS.IOS.CALENDARS;
 PERMISSIONS.IOS.CAMERA;
 PERMISSIONS.IOS.CONTACTS;
 PERMISSIONS.IOS.FACE_ID;
+PERMISSIONS.IOS.LOCAL_NETWORK_PRIVACY;
 PERMISSIONS.IOS.LOCATION_ALWAYS;
 PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
 PERMISSIONS.IOS.MEDIA_LIBRARY;
@@ -741,6 +772,7 @@ type NotificationSettings = {
   carPlay?: boolean;
   criticalAlert?: boolean;
   provisional?: boolean;
+  providesAppSettings?: boolean;
   lockScreen?: boolean;
   notificationCenter?: boolean;
 };
@@ -766,10 +798,18 @@ checkNotifications().then(({status, settings}) => {
 Request notifications permission status and get notifications settings values.
 
 You cannot request notifications permissions on Windows. Disabling or enabling notifications can only be done through the App Settings.
+You cannot request notifications permissions on Android. `requestNotifications` is the same than `checkNotifications` on this platform.
 
 ```ts
 // only used on iOS
-type NotificationOption = 'alert' | 'badge' | 'sound' | 'criticalAlert' | 'carPlay' | 'provisional';
+type NotificationOption =
+  | 'alert'
+  | 'badge'
+  | 'sound'
+  | 'criticalAlert'
+  | 'carPlay'
+  | 'provisional'
+  | 'providesAppSettings';
 
 type NotificationSettings = {
   // properties only available on iOS
@@ -780,13 +820,12 @@ type NotificationSettings = {
   carPlay?: boolean;
   criticalAlert?: boolean;
   provisional?: boolean;
+  providesAppSettings?: boolean;
   lockScreen?: boolean;
   notificationCenter?: boolean;
 };
 
-function requestNotifications(
-  options: NotificationOption[],
-): Promise<{
+function requestNotifications(options: NotificationOption[]): Promise<{
   status: PermissionStatus;
   settings: NotificationSettings;
 }>;
@@ -918,4 +957,46 @@ import {requestLocationAccuracy} from 'react-native-permissions';
 requestLocationAccuracy({purposeKey: 'YOUR-PURPOSE-KEY'})
   .then((accuracy) => console.log(`Location accuracy is: ${accuracy}`))
   .catch(() => console.warn('Cannot request location accuracy'));
+```
+
+### About iOS `LOCATION_ALWAYS` permission
+
+If you are requesting `PERMISSIONS.IOS.LOCATION_ALWAYS`, there won't be a `Always Allow` button in the system dialog. Only `Allow Once`, `Allow While Using App` and `Don't Allow`. This is expected behaviour, check the [Apple Developer Docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization#3578736).
+
+When requesting `PERMISSIONS.IOS.LOCATION_ALWAYS`, if the user choose `Allow While Using App`, a provisional "always" status will be granted. The user will see `While Using` in the settings and later will be informed that your app is using the location in background. That looks like this:
+
+![alt text](https://camo.githubusercontent.com/e8357168f4c8e754adfd940fc065520de838a21a80001839d5e740c18893ec67/68747470733a2f2f636d732e717a2e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031392f30392f696f732d31332d6c6f636174696f6e732d7465736c612d31393230783938322e6a70673f7175616c6974793d37352673747269703d616c6c26773d3132303026683d3930302663726f703d31 'Screenshot')
+
+Subsequently, if you are requesting `LOCATION_ALWAYS` permission, there is no need to request `LOCATION_WHEN_IN_USE`. If the user accepts, `LOCATION_WHEN_IN_USE` will be granted too. If the user denies, `LOCATION_WHEN_IN_USE` will be denied too.
+
+### How to request "App Tracking Transparency" permission on iOS
+
+Since iOS 15.0, it's impossible to request this this permission if the app isn't `active` (see [#648](https://github.com/zoontek/react-native-permissions/issues/648)). A good solution is to use `AppState` to make sure this is the case:
+
+```js
+useEffect(() => {
+  const listener = AppState.addEventListener('change', (status) => {
+    if (Platform.OS === 'ios' && status === 'active') {
+      request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY)
+        .then((result) => console.log(result))
+        .catch((error) => console.log(error));
+    }
+  });
+
+  return listener.remove;
+}, []);
+```
+
+### Testing with Jest
+
+If you don't already have a Jest setup file configured, please add the following to your Jest configuration file and create the new `jest.setup.js` file in project root:
+
+```js
+setupFiles: ['<rootDir>/jest.setup.js'];
+```
+
+You can then add the following line to that setup file to mock the `NativeModule.RNPermissions`:
+
+```js
+jest.mock('react-native-permissions', () => require('react-native-permissions/mock'));
 ```
